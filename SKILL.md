@@ -81,11 +81,15 @@ Create a standalone `.html` file with embedded CSS and no external dependencies.
 
 - Top summary area with meeting title, date, participants, and one-paragraph executive summary.
 - Visual KPI/stat cards only when real counts are available from the minutes, such as number of decisions, risks, action items, or open questions.
+- Two built-in visual themes: `亮色` and `暗黑`. Provide an obvious theme toggle or segmented control near the top of the page.
+- A sticky or always-easy-to-find anchor navigation area with buttons for important sections such as `核心讨论`, `关键决策`, `问题风险`, `行动项`, and `待确认问题`. The buttons must jump to section anchors.
+- A subtle AI-oriented visual style: restrained neon/accent lines, glass-like panels, grid or circuit-like texture, compact status chips, or luminous section markers. Keep it professional; avoid decorative blobs, marketing hero layouts, fictional imagery, or unsupported statistics.
+- A `保存为图片` / `导出图片` button that exports the whole meeting-minutes page as a PNG where browser capabilities allow it. Prefer a client-side implementation using an SVG `foreignObject` canvas snapshot or another no-backend approach. If export may fail because of browser security restrictions, include a clear fallback message suggesting browser screenshot/print-to-PDF.
 - Section navigation or a compact table of contents for long minutes.
 - Clear sections for summary, discussion topics, decisions, risks, action items, and open questions.
 - Tables must be readable on desktop and mobile; use responsive overflow for wide tables.
 - Use restrained colors, high contrast, and print-friendly styling.
-- Do not include decorative marketing hero sections, fictional imagery, or unsupported statistics.
+- Buttons and controls must be visually clear, keyboard accessible where practical, and should not overlap page content on mobile.
 
 The HTML must preserve the same factual boundaries as the text minutes: unknown owners, dates, and decisions remain marked as `未明确`, `未提及`, or `需确认`.
 
