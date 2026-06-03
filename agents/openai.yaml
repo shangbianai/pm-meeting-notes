@@ -1,6 +1,6 @@
 interface:
   display_name: "PM Meeting Notes"
-  short_description: "把会议转写整理成会议纪要、PRD、流程图和待办清单"
-  default_prompt: "Use $pm-meeting-notes to turn this meeting transcript into structured meeting minutes and follow-up PM outputs."
+  short_description: "把会议转写整理成纪要、HTML、文档和表格"
+  default_prompt: "Use $pm-meeting-notes to turn this meeting transcript into structured meeting minutes and export a shareable HTML or document artifact."
 policy:
   allow_implicit_invocation: true

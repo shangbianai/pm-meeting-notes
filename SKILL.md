@@ -1,13 +1,13 @@
 ---
 name: pm-meeting-notes
-description: Use this skill when the user provides long Chinese transcript-like text, meeting notes, copied speech-to-text content, work discussions, brainstorming records, or asks to summarize meeting minutes, product requirements, business processes, todos, or product optimization items from such material. It defaults to generating structured meeting minutes when the user only provides long raw text, then offers a fixed numbered follow-up menu.
+description: Use this skill when the user provides long Chinese transcript-like text, meeting notes, copied speech-to-text content, work discussions, brainstorming records, or asks to summarize meeting minutes, product requirements, business processes, todos, product optimization items, or export shareable HTML/document/table files from such material. It defaults to generating structured meeting minutes when the user only provides long raw text.
 version: 1.0.0
 author: DPXJ
 license: MIT
 platforms: [linux, macos, windows]
 metadata:
   hermes:
-    tags: [meeting-notes, product-management, transcript, prd, todo, mermaid]
+    tags: [meeting-notes, product-management, transcript, prd, todo, mermaid, html, docx, xlsx]
     category: productivity
 ---
 
@@ -15,7 +15,7 @@ metadata:
 
 ## Purpose
 
-Turn raw Chinese speech-to-text material into reliable product-manager-facing outputs. The source is often messy: meeting transcripts, work records, business discussions, brainstorming, or fragmented operational notes.
+Turn raw Chinese speech-to-text material into reliable product-manager-facing outputs and shareable artifacts. The source is often messy: meeting transcripts, work records, business discussions, brainstorming, or fragmented operational notes.
 
 The assistant must preserve meaning, remove noise, organize logic, and distinguish original content from inferred product analysis.
 
@@ -26,7 +26,8 @@ First classify the user input:
 - **Raw transcript only**: long, oral, fragmented, contains repeated phrases, filler words, speaker-like turns, or meeting/work discussion content. Default to task `1. 会议纪要`.
 - **Raw transcript plus instruction**: execute the requested task directly.
 - **Short normal question**: answer normally; do not force the meeting workflow.
-- **Ambiguous long text**: treat as raw transcript and produce default meeting minutes, then offer the fixed numbered menu.
+- **Ambiguous long text**: treat as raw transcript and produce default meeting minutes.
+- **Export request**: if the user asks for HTML, Word/document, table, Excel, local file, or shareable page, create the requested artifact instead of only replying with text.
 
 If a file is uploaded, read/extract the content first. If the file is very long, process by topic clusters before producing the final output.
 
@@ -34,7 +35,7 @@ If a file is uploaded, read/extract the content first. If the file is very long,
 
 Always use this exact numbering when offering follow-up actions:
 
-1. **会议纪要**: default output for raw transcript; produce formal meeting minutes.
+1. **会议纪要**: default output for raw transcript; produce formal meeting minutes only.
 2. **快速梳理**: concise structured overview when the user's focus is unclear.
 3. **梳理产品需求**: convert the material into a detailed PRD-style document.
 4. **梳理业务流程**: produce business process explanation plus Mermaid flowchart code.
@@ -43,18 +44,77 @@ Always use this exact numbering when offering follow-up actions:
 
 When the user replies with only a number, apply that numbered task to the latest transcript/material in the conversation.
 
+Do not append the fixed task menu after normal outputs. Only show the menu if the user explicitly asks what else can be done or how to continue.
+
 ## Default Behavior
 
 When the user only drops a long transcript, do not ask what to do first. Produce `1. 会议纪要` immediately.
 
-End the output with:
-
-```text
-你也可以继续回复序号让我进一步处理：
-2 快速梳理｜3 梳理产品需求｜4 梳理业务流程｜5 梳理待办｜6 梳理产品优化项
-```
+The default meeting-minutes response must contain only the meeting-minutes content. Do not include meta commentary, follow-up menus, or "you can reply with a number" text.
 
 If the transcript is too incomplete to produce useful minutes, still provide a lightweight meeting-minutes draft and clearly list missing information under `待确认问题`.
+
+## Artifact Outputs
+
+When the user asks to export, convert, save, create a local file, share, visualize, make an HTML page, make a document, or make a table, generate an actual file when the environment supports file creation.
+
+Recommended output types:
+
+- **HTML**: shareable visual meeting-minutes page.
+- **DOCX/Word document**: formal document with headings, tables, and basic formatting.
+- **XLSX/Excel table**: structured tables for decisions, risks, action items, requirements, or optimization items.
+- **Markdown**: portable source document when the user wants easy editing.
+
+File naming:
+
+- Use a concise slug based on the meeting topic, such as `meeting-notes-ai-agent-digital-employee.html`.
+- If the topic is unclear, use `meeting-notes-YYYYMMDD-HHMM`.
+- Place generated files in the current workspace or a user-specified output directory.
+
+After creating files, reply briefly with the file paths and what each file contains.
+
+### HTML Meeting-Minutes Page
+
+Use HTML when the user asks for `HTML`, `可视化`, `在线查看`, `分享`, `页面`, or `本地查看`.
+
+Create a standalone `.html` file with embedded CSS and no external dependencies. The page should be polished but work-like, suitable for sharing inside a company:
+
+- Top summary area with meeting title, date, participants, and one-paragraph executive summary.
+- Visual KPI/stat cards only when real counts are available from the minutes, such as number of decisions, risks, action items, or open questions.
+- Section navigation or a compact table of contents for long minutes.
+- Clear sections for summary, discussion topics, decisions, risks, action items, and open questions.
+- Tables must be readable on desktop and mobile; use responsive overflow for wide tables.
+- Use restrained colors, high contrast, and print-friendly styling.
+- Do not include decorative marketing hero sections, fictional imagery, or unsupported statistics.
+
+The HTML must preserve the same factual boundaries as the text minutes: unknown owners, dates, and decisions remain marked as `未明确`, `未提及`, or `需确认`.
+
+### Document Output
+
+Use DOCX/Word when the user asks for `文档`, `Word`, `docx`, `正式文档`, `本地文档`, or `导出文档`.
+
+The document should include:
+
+- Title and meeting metadata table.
+- Numbered headings.
+- Tables for decisions, risks, action items, and open questions.
+- Basic formatting: readable Chinese font, clear heading hierarchy, table borders, header shading, spacing between sections.
+- No follow-up menus or assistant commentary inside the document.
+
+### Table Output
+
+Use XLSX/Excel or a table document when the user asks for `表格`, `Excel`, `xlsx`, `待办表`, `风险表`, `需求表`, or `产品优化项表`.
+
+Create separate sheets when useful:
+
+- `会议摘要`
+- `关键决策`
+- `风险问题`
+- `行动项`
+- `待确认问题`
+- `需求/优化项` when relevant
+
+Each sheet should have frozen headers, readable column widths, wrapped text, and basic header styling when the tooling allows it.
 
 ## Transcript Cleanup Rules
 
@@ -117,6 +177,8 @@ Use this as the default structure:
 ```
 
 If the material is not a formal meeting but is still a work discussion, adapt headings naturally while keeping the same substance.
+
+For meeting minutes intended for sharing, keep the content direct and complete. Do not add follow-up options, capability descriptions, or next-step menus unless the user explicitly asks for them.
 
 ### 2. 快速梳理
 
