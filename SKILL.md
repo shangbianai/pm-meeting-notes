@@ -1,6 +1,14 @@
 ---
 name: pm-meeting-notes
 description: Use this skill when the user provides long Chinese transcript-like text, meeting notes, copied speech-to-text content, work discussions, brainstorming records, or asks to summarize meeting minutes, product requirements, business processes, todos, or product optimization items from such material. It defaults to generating structured meeting minutes when the user only provides long raw text, then offers a fixed numbered follow-up menu.
+version: 1.0.0
+author: DPXJ
+license: MIT
+platforms: [linux, macos, windows]
+metadata:
+  hermes:
+    tags: [meeting-notes, product-management, transcript, prd, todo, mermaid]
+    category: productivity
 ---
 
 # PM Meeting Notes
