@@ -1,7 +1,7 @@
 ---
 name: pm-meeting-notes
 description: Use this skill when the user provides long Chinese transcript-like text, meeting notes, copied speech-to-text content, work discussions, brainstorming records, or asks to summarize meeting minutes, product requirements, business processes, todos, product optimization items, or export shareable HTML/document/table files from such material. It defaults to generating structured meeting minutes when the user only provides long raw text.
-version: 1.0.0
+version: 1.1.0
 author: DPXJ
 license: MIT
 platforms: [linux, macos, windows]
@@ -77,7 +77,7 @@ After creating files, reply briefly with the file paths and what each file conta
 
 Use HTML when the user asks for `HTML`, `可视化`, `在线查看`, `分享`, `页面`, or `本地查看`.
 
-Create a standalone `.html` file with embedded CSS and no external dependencies. The page should be polished but work-like, suitable for sharing inside a company:
+Create a standalone `.html` file with embedded CSS and no external dependencies. When available, start from `templates/meeting-notes-html-runtime.html` in this skill directory and replace the sample content with the current meeting-minutes content. The page should be polished but work-like, suitable for sharing inside a company:
 
 - Top summary area with meeting title, date, participants, and one-paragraph executive summary.
 - Visual KPI/stat cards only when real counts are available from the minutes, such as number of decisions, risks, action items, or open questions.
@@ -92,6 +92,21 @@ Create a standalone `.html` file with embedded CSS and no external dependencies.
 - Buttons and controls must be visually clear, keyboard accessible where practical, and should not overlap page content on mobile.
 
 The HTML must preserve the same factual boundaries as the text minutes: unknown owners, dates, and decisions remain marked as `未明确`, `未提及`, or `需确认`.
+
+#### HTML Interaction Requirements
+
+Before delivering an HTML file, verify these interactions when tooling allows it:
+
+- The theme button changes `document.body.dataset.theme` between `light` and `dark`.
+- The theme button label changes between `暗黑模式` and `亮色模式`.
+- Anchor buttons jump to the corresponding section ids.
+- The image-export button never silently fails:
+  - First try exporting a PNG through SVG `foreignObject` + canvas.
+  - Insert temporary download links into `document.body` before clicking them for better browser compatibility.
+  - If PNG export is blocked by the browser or local-file security restrictions, automatically download the same page as an `.svg` image and show a concise fallback message.
+- During SVG/canvas export, copy the active CSS variables from `body` to the cloned `#captureArea`; otherwise dark-mode exports may lose their theme.
+
+Avoid JavaScript string literals that contain raw newlines. For example, use `join('\\n')`, not a literal line break inside quotes.
 
 ### Document Output
 
