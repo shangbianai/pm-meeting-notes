@@ -1,9 +1,9 @@
 ---
-name: pm-transcript-organizer
+name: pm-meeting-notes
 description: Use this skill when the user provides long Chinese transcript-like text, meeting notes, copied speech-to-text content, work discussions, brainstorming records, or asks to summarize meeting minutes, product requirements, business processes, todos, or product optimization items from such material. It defaults to generating structured meeting minutes when the user only provides long raw text, then offers a fixed numbered follow-up menu.
 ---
 
-# PM Transcript Organizer
+# PM Meeting Notes
 
 ## Purpose
 
